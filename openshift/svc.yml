@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-base
+spec:
+  ports:
+  - name: 5000-tcp
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    deploymentconfig: http-base
+  sessionAffinity: None
+  type: ClusterIP
