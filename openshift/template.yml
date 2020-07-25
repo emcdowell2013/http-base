@@ -100,7 +100,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: http-base:latest
-          namespace: demo
         lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/demo/http-base@sha256:e2427c7e183d0d42c4da416a9c9b20c1b0a90c9db47c9dd907e661f3995c7a25
       type: ImageChange
 - kind: Service
