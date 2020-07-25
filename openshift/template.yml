@@ -1,0 +1,132 @@
+kind: "Template"
+apiVersion: v1
+metadata: 
+  name: http-base
+objects:
+- kind: ImageStream
+  apiVersion: image.openshift.io/v1
+  metadata:
+    name: http-base
+  spec:
+    lookupPolicy:
+      local: false
+- kind: BuildConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: http-base
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: http-base:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: demo
+        uri: https://github.com/emcdowell2013/http-base
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs:12
+          namespace: openshift
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - github:
+        secret: aVnja64UG5_AefMjQWt1
+      type: GitHub
+    - generic:
+        secret: 4VFY9y_MiPwr0Bc8P4VH
+      type: Generic
+    - type: ConfigChange
+    - imageChange:
+        lastTriggeredImageID: image-registry.openshift-image-registry.svc:5000/openshift/nodejs@sha256:f9829b5c49ddf3b930f81ef8cbf516354035af2e4f88a9b9651a699957274bd1
+      type: ImageChange
+- kind: DeploymentConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: http-base
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      deploymentconfig: http-base
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deploymentconfig: http-base
+      spec:
+        containers:
+        - image: image-registry.openshift-image-registry.svc:5000/demo/http-base@sha256:e2427c7e183d0d42c4da416a9c9b20c1b0a90c9db47c9dd907e661f3995c7a25
+          imagePullPolicy: Always
+          name: http-base
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - http-base
+        from:
+          kind: ImageStreamTag
+          name: http-base:latest
+          namespace: demo
+        lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/demo/http-base@sha256:e2427c7e183d0d42c4da416a9c9b20c1b0a90c9db47c9dd907e661f3995c7a25
+      type: ImageChange
+- kind: Service
+  apiVersion: build.openshift.io/v1 
+  metadata:
+    name: http-base
+  spec:
+    ports:
+    - name: 5000-tcp
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+    selector:
+      deploymentconfig: http-base
+    sessionAffinity: None
+    type: ClusterIP
+- kind: Route
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: http-base
+  spec:
+    host: http-base-demo.apps.ocp4.example.com
+    port:
+      targetPort: 5000-tcp
+    to:
+      kind: Service
+      name: http-base
+      weight: 100
+    wildcardPolicy: None
