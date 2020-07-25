@@ -123,7 +123,7 @@ objects:
   spec:
     host: http-base-demo.apps.ocp4.example.com
     port:
-      targetPort: 5000-tcp
+      targetPort: 8080-tcp
     to:
       kind: Service
       name: http-base
