@@ -49,7 +49,7 @@ objects:
         lastTriggeredImageID: image-registry.openshift-image-registry.svc:5000/openshift/nodejs@sha256:f9829b5c49ddf3b930f81ef8cbf516354035af2e4f88a9b9651a699957274bd1
       type: ImageChange
 - kind: DeploymentConfig
-  apiVersion: build.openshift.io/v1
+  apiVersion: v1
   metadata:
     name: http-base
   spec:
@@ -103,7 +103,7 @@ objects:
         lastTriggeredImage: image-registry.openshift-image-registry.svc:5000/demo/http-base@sha256:e2427c7e183d0d42c4da416a9c9b20c1b0a90c9db47c9dd907e661f3995c7a25
       type: ImageChange
 - kind: Service
-  apiVersion: build.openshift.io/v1 
+  apiVersion: v1 
   metadata:
     name: http-base
   spec:
@@ -117,7 +117,7 @@ objects:
     sessionAffinity: None
     type: ClusterIP
 - kind: Route
-  apiVersion: build.openshift.io/v1
+  apiVersion: v1
   metadata:
     name: http-base
   spec:
